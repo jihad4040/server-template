@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(createUserDto: CreateUserDto) {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
@@ -18,28 +18,15 @@ export class UsersService {
     });
   }
 
-  findAll() {
-    return this.prisma.user.findMany({
-      include: {
-        businessInformation: true,
-        notifications: true,
-        subscriptions: true,
-        cardInfo: true,
-        supportTickets: true,
-      }
+  async findAll() {
+    const result = await this.prisma.user.findMany({
     });
+    return result;
   }
 
   async findOne(userId: string) {
     const user = await this.prisma.user.findUnique({
-      where: { userId },
-      include: {
-        businessInformation: true,
-        notifications: true,
-        subscriptions: true,
-        cardInfo: true,
-        supportTickets: true,
-      }
+      where: { userId }
     });
     if (!user) {
       throw new NotFoundException(`User with ID ${userId} not found`);

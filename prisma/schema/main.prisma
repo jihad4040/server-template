@@ -21,3 +21,8 @@ enum Status {
   TRIAL
   SUSPEND
 }
+
+enum AdminRole {
+  ADMIN
+  SUPER_ADMIN
+}
