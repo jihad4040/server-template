@@ -3,12 +3,12 @@ import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class MailService {
-  constructor(private mailerService: MailerService) {}
+  constructor(private mailerService: MailerService) { }
 
   async sendVerificationCode(email: string, code: string) {
     await this.mailerService.sendMail({
       to: email,
-      subject: 'Welcome to Aimalya - Verify Your Email',
+      subject: 'Welcome to T-price - Verify Your Email',
       template: './verification', // path to template file
       context: {
         code,
@@ -19,7 +19,7 @@ export class MailService {
   async sendPasswordReset(email: string, code: string) {
     await this.mailerService.sendMail({
       to: email,
-      subject: 'Aimalya - Password Reset Request',
+      subject: 'T-price - Password Reset Request',
       template: './password-reset',
       context: {
         code,

@@ -81,12 +81,19 @@ export class AuthService {
         secret: this.configService.get('jwt.refreshSecret'),
       });
 
-      const user = await this.usersService.findOne(payload.sub);
+      let user: any = await this.prisma.user.findUnique({ where: { userId: payload.sub } });
+      let role = 'USER';
+
+      if (!user) {
+        user = await this.prisma.admin.findUnique({ where: { adminId: payload.sub } });
+        if (user) role = user.role;
+      }
+
       if (!user || user.refreshToken !== refreshToken) {
         throw new UnauthorizedException();
       }
 
-      return this.generateTokens(user.userId, user.email, user.role as any);
+      return this.generateTokens(user.userId || user.adminId, user.email, role);
     } catch (e) {
       throw new UnauthorizedException();
     }
@@ -145,7 +152,14 @@ export class AuthService {
       ),
     ]);
 
-    await this.usersService.update(userId, { refreshToken } as any);
+    if (role === 'USER') {
+      await this.usersService.update(userId, { refreshToken } as any);
+    } else {
+      await this.prisma.admin.update({
+        where: { adminId: userId },
+        data: { refreshToken },
+      });
+    }
 
     return {
       accessToken,
