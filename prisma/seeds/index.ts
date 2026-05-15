@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { PrismaClient, Role, Status, AdminRole } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import pg from 'pg';
@@ -15,17 +16,17 @@ async function main() {
   const hashedPassword = await bcrypt.hash(superAdminPassword, 10);
 
   // Create Super Admin if it doesn't exist
-  const existingSuperAdmin = await prisma.admin.findFirst({
-    where: { role: AdminRole.SUPER_ADMIN },
+  const existingSuperAdmin = await prisma.user.findFirst({
+    where: { role: Role.SUPER_ADMIN },
   });
 
   if (!existingSuperAdmin) {
-    const superAdmin = await prisma.admin.create({
+    const superAdmin = await prisma.user.create({
       data: {
         email: superAdminEmail,
         password: hashedPassword,
         name: 'Super Admin',
-        role: AdminRole.SUPER_ADMIN,
+        role: Role.SUPER_ADMIN,
       },
     });
     console.log(`Created super admin: ${superAdmin.email}`);
